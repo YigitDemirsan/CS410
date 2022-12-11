@@ -124,9 +124,9 @@ public class ChomskyNormalForm {
                 String left = grammarLeft.get(j);
                 if (inaccessible.contains(left)) {
                     this.grammar.getRight().remove(i - removed);
-                    removed += 1;
+                    removed = removed + 1;
                 }
-                i += 1;
+                i = i+ 1;
             }
             this.grammar.get_left_side().removeAll(inaccessible);
             this.grammar.print_word();
