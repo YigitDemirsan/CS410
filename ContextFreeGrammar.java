@@ -1,6 +1,5 @@
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.io.File;
 
@@ -105,17 +104,6 @@ public class ContextFreeGrammar {
             }
         }
     }
-
-    public void print_word(){
-        for (int i = 0; i < this.right_most.size(); i++){
-            System.out.print(this.left_most.get(i) + ": ");
-            for (String word: this.right_most.get(i)){
-                System.out.print(word + " ");
-            }
-            System.out.println();
-        }
-    }
-
     public void merge_words(){
         ArrayList<Integer> removable_elements = new ArrayList<>();
         for (int i = 0; i < this.left_most.size(); i++){
@@ -133,6 +121,17 @@ public class ContextFreeGrammar {
             k = k+ 1;
         }
     }
+
+    public void print_word(){
+        for (int i = 0; i < this.right_most.size(); i++){
+            System.out.print(this.left_most.get(i) + ": ");
+            for (String word: this.right_most.get(i)){
+                System.out.print(word + " ");
+            }
+            System.out.println();
+        }
+    }
+
 
     public void setLeft_most(ArrayList<String> left_most) {
         this.left_most = left_most;
@@ -154,9 +153,9 @@ public class ContextFreeGrammar {
         this.is_contain_epsilon = is_contain_epsilon;
     }
 
-    public List<String> all_rules(String t) { return this.right_most.get(this.left_most.indexOf(t)); }
     public List<String> get_all_terminals() { return terminal_side; }
     public List<String> get_all_nonterminals() { return non_terminal_side; }
+    public List<String> all_rules(String t) { return this.right_most.get(this.left_most.indexOf(t)); }
     public List<String> get_left_side() { return left_most; }
-    public List<List<String>> getRight() { return right_most; }
+    public List<List<String>> get_right_side() { return right_most; }
 }
