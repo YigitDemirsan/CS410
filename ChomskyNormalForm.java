@@ -456,3 +456,14 @@ public class ChomskyNormalForm {
         this.grammar.print_word();
     }
 }
+class Main {
+    public static void main(String[] args) {
+        try {
+            ChomskyNormalForm chomsky = new ChomskyNormalForm(new File("\\..\\test.txt"));
+            chomsky.to_chomsky();
+        }
+        catch (FileNotFoundException e){
+            System.out.print(e.toString());
+        }
+    }
+}
