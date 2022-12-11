@@ -87,55 +87,7 @@ public class ChomskyNormalForm {
             System.out.println("\nNo non-productive non-terminals.");
         }
     }
-    private void rmv_In_Access(){
-        ArrayList<String> inaccessible = new ArrayList<>();
-        List<String> left_side = this.grammar.get_left_side();
-        for (int j = 0; j < left_side.size(); j++) {
-            String non_terminal = left_side.get(j);
-            if (non_terminal.equals("S")) continue;
-            boolean finded = false;
-            List<List<String>> right = this.grammar.getRight();
-            for (int i = 0; i < right.size(); i++) {
-                List<String> words = right.get(i);
-                for (String word : words) {
-                    if (word.contains(non_terminal)) {
-                        finded = true;
-                        break;
-                    }
-                }
-                if (finded) break;
-            }
-            if (!finded && !inaccessible.contains(non_terminal)) {
-                inaccessible.add(non_terminal);
-            }
-        }
-        if (inaccessible.size() != 0){
-            this.grammar.get_all_nonterminals().removeAll(inaccessible);
-            System.out.print("\nInaccessible non-terminals are: ");
-            for (int i = 0; i < inaccessible.size(); i++) {
-                String s = inaccessible.get(i);
-                System.out.print(s + " ");
-            }
-            System.out.println();
-            int i = 0;
-            int removed = 0;
-            List<String> grammarLeft = this.grammar.get_left_side();
-            for (int j = 0; j < grammarLeft.size(); j++) {
-                String left = grammarLeft.get(j);
-                if (inaccessible.contains(left)) {
-                    this.grammar.getRight().remove(i - removed);
-                    removed = removed + 1;
-                }
-                i = i+ 1;
-            }
-            this.grammar.get_left_side().removeAll(inaccessible);
-            this.grammar.print_word();
-        }
-        else {
-            System.out.println();
-            System.out.println("No inaccessible non-terminals.");
-        }
-    }
+
     private void rmv_epsilon(){
         if (!this.grammar.is_contain_epsilon){
             System.out.println("No epsilon non-terminals.");
@@ -183,6 +135,76 @@ public class ChomskyNormalForm {
         }
         this.grammar.print_word();
     }
+    private void rmv_In_Access(){
+        ArrayList<String> inaccessible = new ArrayList<>();
+        List<String> left_side = this.grammar.get_left_side();
+        for (int j = 0; j < left_side.size(); j++) {
+            String non_terminal = left_side.get(j);
+            if (non_terminal.equals("S")) continue;
+            boolean finded = false;
+            List<List<String>> right = this.grammar.getRight();
+            for (int i = 0; i < right.size(); i++) {
+                List<String> words = right.get(i);
+                for (String word : words) {
+                    if (word.contains(non_terminal)) {
+                        finded = true;
+                        break;
+                    }
+                }
+                if (finded) break;
+            }
+            if (!finded && !inaccessible.contains(non_terminal)) {
+                inaccessible.add(non_terminal);
+            }
+        }
+        if (inaccessible.size() != 0){
+            this.grammar.get_all_nonterminals().removeAll(inaccessible);
+            System.out.print("Inaccessible non-terminals: ");
+            for (int i = 0; i < inaccessible.size(); i++) {
+                String s = inaccessible.get(i);
+                System.out.print(s + " ");
+            }
+            System.out.println();
+            int i = 0;
+            int removed = 0;
+            List<String> grammarLeft = this.grammar.get_left_side();
+            for (int j = 0; j < grammarLeft.size(); j++) {
+                String left = grammarLeft.get(j);
+                if (inaccessible.contains(left)) {
+                    this.grammar.getRight().remove(i - removed);
+                    removed += 1;
+                }
+                i += 1;
+            }
+            this.grammar.get_left_side().removeAll(inaccessible);
+            this.grammar.print_word();
+        }
+        else {
+            System.out.println();
+            System.out.println("There is no inaccessible non-terminals.");
+        }
+    }
+    private void is_start_symbol(){
+        boolean need_to_add = false;
+        for (List<String> rules: this.grammar.getRight()) {
+            for (String rule : rules) {
+                if (rule.contains("S")) {
+                    need_to_add = true;
+                    break;
+                }
+            }
+            if (need_to_add){
+                break;
+            }
+        }
+        if (need_to_add){
+            this.grammar.get_all_nonterminals().add("S0");
+            System.out.println("\nNew start symbol - S0");
+            this.grammar.change_left_side("S", "S0");
+            this.grammar.add_new_rule("S", this.grammar.all_rules("S0"));
+            this.grammar.print_word();
+        }
+    }
     private void add_terminal_rule(){
         List<String> left_side = this.grammar.get_left_side();
         for (int j = 0; j < left_side.size(); j++) {
@@ -215,61 +237,9 @@ public class ChomskyNormalForm {
             this.grammar.add_new_rule(non_terminal, l);
             this.grammar.get_all_nonterminals().add(non_terminal);
         }
-        System.out.println("\nAdded new rules for terminals:");
+        System.out.println("Added new rules has been added to the terminals:");
         this.grammar.print_word();
     }
-
-
-    private void is_start_symbol(){
-        boolean need_to_add = false;
-        for (List<String> rules: this.grammar.getRight()) {
-            for (String rule : rules) {
-                if (rule.contains("S")) {
-                    need_to_add = true;
-                    break;
-                }
-            }
-            if (need_to_add){
-                break;
-            }
-        }
-        if (need_to_add){
-            this.grammar.get_all_nonterminals().add("S0");
-            System.out.println("\nNew start symbol - S0");
-            this.grammar.change_left_side("S", "S0");
-            this.grammar.add_new_rule("S", this.grammar.all_rules("S0"));
-            this.grammar.print_word();
-        }
-    }
-
-    private void rmv_More_Than_2(){
-        ArrayList<String> r = new ArrayList<>(this.grammar.get_left_side());
-        for (String left: r){
-            List<String> new_r = new ArrayList<>();
-            for (String rule: this.grammar.all_rules(left)){
-                if (rule.length() > 2){
-                    while (rule.length() > 2){
-                        String w = rule.substring(0, 2);
-                        rule = rule.substring(2);
-                        List<String> l = new ArrayList<>();
-                        l.add(w);
-                        String w_ = this.grammar.free();
-                        this.grammar.get_all_nonterminals().add(w_);
-                        this.grammar.add_new_rule(w_, l);
-                        rule = w_ + rule;
-                    }
-                    new_r.add(rule);
-                }
-                else {
-                    new_r.add(rule);
-                }
-            }
-            this.grammar.rewrite_rule(left, new_r);
-        }
-        System.out.println("\nRemoving productions with length more than 2.");
-        this.grammar.print_word();
-    }
-
     private void rmv_Less_Than_1(){
         List<String> grammarLeft = this.grammar.get_left_side();
         for (int i = 0; i < grammarLeft.size(); i++) {
@@ -296,6 +266,33 @@ public class ChomskyNormalForm {
             this.grammar.rewrite_rule(left, rule_list);
         }
         System.out.println("Productions with a single non-terminal on the right side are removed.");
+        this.grammar.print_word();
+    }
+    private void rmv_More_Than_2(){
+        ArrayList<String> r = new ArrayList<>(this.grammar.get_left_side());
+        for (String left: r){
+            List<String> new_r = new ArrayList<>();
+            for (String rule: this.grammar.all_rules(left)){
+                if (rule.length() > 2){
+                    while (rule.length() > 2){
+                        String w = rule.substring(0, 2);
+                        rule = rule.substring(2);
+                        List<String> l = new ArrayList<>();
+                        l.add(w);
+                        String w_ = this.grammar.free();
+                        this.grammar.get_all_nonterminals().add(w_);
+                        this.grammar.add_new_rule(w_, l);
+                        rule = w_ + rule;
+                    }
+                    new_r.add(rule);
+                }
+                else {
+                    new_r.add(rule);
+                }
+            }
+            this.grammar.rewrite_rule(left, new_r);
+        }
+        System.out.println("Removing productions with length more than 2.");
         this.grammar.print_word();
     }
 }
